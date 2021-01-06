@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 const colors = document.getElementsByClassName("jsColor");
 const range = document.getElementById("jsRange");
 const mode = document.getElementById("jsMode");
+const save = document.getElementById("jsSave");
 
 const INITAIL_COLOR = "#2c2c2c";
 const CANVAS_SIZE = 700;
@@ -11,8 +12,10 @@ const CANVAS_SIZE = 700;
 canvas.width = CANVAS_SIZE;
 canvas.height = CANVAS_SIZE;
 
-ctx.strokeStyle = INITAIL_COLOR;
-ctx.fillStyle = INITAIL_COLOR;
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, 700, 700); // 하얀색 배경 초기화
+ctx.strokeStyle = INITAIL_COLOR; // 검정색 stroke만 초기화
+ctx.fillStyle = INITAIL_COLOR; // 마찬가지로 배경도 색만 초기화 적용은 ㄴㄴ.
 ctx.lineWidth = 2.5;
 
 let painting = false;
@@ -81,12 +84,29 @@ function handleCanvasClick(event) {
   }
 }
 
+function handleCM(event) {
+  event.preventDefault(); // 우클릭 방지
+}
+
+function handleSave() {
+  const image = canvas.toDataURL("image/png"); // image 주소 가져옴
+  //console.log(image);
+
+  const link = document.createElement("a");
+  link.href = image; // ex) canvas.toDataURL. image의 다운로드 링크를 가져옴
+  link.download = "PaintJs[EXPORT]"; // ex) "mypainting.png" , 이미지의 이름을 가져옴
+  //console.log(link);
+
+  link.click();
+}
+
 if (canvas) {
   canvas.addEventListener("mousemove", onMouseMove);
   canvas.addEventListener("mousedown", startPainting);
   canvas.addEventListener("mouseup", stopPainting);
   canvas.addEventListener("mouseenter", stopPainting);
   canvas.addEventListener("click", handleCanvasClick);
+  canvas.addEventListener("contextmenu", handleCM); // 이미지 저장 이벤트. 마우스 우측 버튼
 }
 
 // colors div를 배열로 바꾸고 반복문 돎. 클릭시 이벤트
@@ -100,4 +120,8 @@ if (range) {
 
 if (mode) {
   mode.addEventListener("click", handlemode);
+}
+
+if (save) {
+  save.addEventListener("click", handleSave);
 }
