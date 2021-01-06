@@ -20,4 +20,4 @@
 - Canvas tag 및 내장 함수 사용
 - gh-pages 배포
 
-[구경가기](https://kwak-bs.github.io/momentum/)
+[구경가기](https://kwak-bs.github.io/PaintJs/)
