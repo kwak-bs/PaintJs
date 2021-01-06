@@ -1,19 +1,34 @@
 const canvas = document.getElementById("jsCanvas");
 const ctx = canvas.getContext("2d");
+const colors = document.getElementsByClassName("jsColor");
+const range = document.getElementById("jsRange");
+const mode = document.getElementById("jsMode");
 
-ctx.strokeStyle = "#2c2c2c";
+const INITAIL_COLOR = "#2c2c2c";
+const CANVAS_SIZE = 700;
+
+// canvas자체에도 사이즈를 또 줘야함. css에서만 주는 것이 아닌.
+canvas.width = CANVAS_SIZE;
+canvas.height = CANVAS_SIZE;
+
+ctx.strokeStyle = INITAIL_COLOR;
+ctx.fillStyle = INITAIL_COLOR;
 ctx.lineWidth = 2.5;
 
 let painting = false;
+let modeToggle = false;
 
+// 그리기 시작
 function startPainting() {
   painting = true;
 }
 
+// 그리기 멈춤
 function stopPainting() {
   painting = false;
 }
 
+// 마우스가 움직임
 function onMouseMove(event) {
   //console.log(event);
   // canvas내의 좌표만 알고 싶으면 offset
@@ -21,15 +36,68 @@ function onMouseMove(event) {
 
   const x = event.offsetX;
   const y = event.offsetY;
+
+  // 그리는 도중 아닐 때
+  if (!painting) {
+    // 움직이는 Path경로 다 저장
+    ctx.beginPath();
+    ctx.moveTo(x, y); // 마우스 클릭 직전까지 점의 위치 저장.
+  } else {
+    // 본인 위치에서 점을 생성한것이 계속 이어저서 선처럼 보이는것.
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
 }
 
-function onMouseDown(event) {
-  painting = true;
+function changeColor(event) {
+  //console.log(event.target.style.backgroundColor);
+  const color = event.target.style.backgroundColor;
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+}
+
+function changeSize(event) {
+  console.log(event.target.value);
+  const size = event.target.value;
+  ctx.lineWidth = size;
+}
+
+function handlemode(event) {
+  if (!modeToggle) {
+    // fill 일때
+    modeToggle = true;
+    mode.innerHTML = "paint";
+  } else {
+    // paint 일때
+    modeToggle = false;
+    mode.innerHTML = "fill";
+  }
+}
+
+// 캔버스 클릭시 채우기 효과 적용
+function handleCanvasClick(event) {
+  if (modeToggle) {
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+  }
 }
 
 if (canvas) {
   canvas.addEventListener("mousemove", onMouseMove);
-  canvas.addEventListener("mousedown", onMouseDown);
+  canvas.addEventListener("mousedown", startPainting);
   canvas.addEventListener("mouseup", stopPainting);
   canvas.addEventListener("mouseenter", stopPainting);
+  canvas.addEventListener("click", handleCanvasClick);
+}
+
+// colors div를 배열로 바꾸고 반복문 돎. 클릭시 이벤트
+Array.from(colors).forEach((color) =>
+  color.addEventListener("click", changeColor)
+);
+
+if (range) {
+  range.addEventListener("input", changeSize);
+}
+
+if (mode) {
+  mode.addEventListener("click", handlemode);
 }
